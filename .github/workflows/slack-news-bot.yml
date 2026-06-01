@@ -1,0 +1,40 @@
+name: Slack News Bot
+
+on:
+  schedule:
+    - cron: '0 22 * * *'  # 7:00 AM JST
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install -r requirements.txt
+
+      - name: stock_news (7:00)
+        run: python main.py --channel stock_news
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SLACK_WEBHOOK_STOCK_NEWS: ${{ secrets.SLACK_WEBHOOK_STOCK_NEWS }}
+
+      - run: sleep 600
+
+      - name: ai_news (7:10)
+        run: python main.py --channel ai_news
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SLACK_WEBHOOK_AI_NEWS: ${{ secrets.SLACK_WEBHOOK_AI_NEWS }}
+
+      - run: sleep 600
+
+      - name: ai_research (7:20)
+        run: python main.py --channel ai_research
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SLACK_WEBHOOK_AI_RESEARCH: ${{ secrets.SLACK_WEBHOOK_AI_RESEARCH }}
